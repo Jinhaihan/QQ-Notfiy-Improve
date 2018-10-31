@@ -3,6 +3,7 @@ package com.jinhaihan.qqnotfandshare;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Application;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -21,6 +23,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.jinhaihan.qqnotfandshare.utils.FileUtils;
 import com.jinhaihan.qqnotfandshare.utils.PreferencesUtils;
@@ -51,6 +54,8 @@ public class PreferencesActivity extends Activity {
                 openNotificationListenSettings();
             if("aces_permit".equals(preference.getKey()))
                 startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+            if("bet_permit".equals(preference.getKey()))
+                ignoreBatteryOptimization(getActivity());
             if(Build.VERSION.SDK_INT >= 23 && "save_permit".equals(preference.getKey()) && !isStorageEnable())
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_CODE);
             if("version_code".equals(preference.getKey()))
@@ -74,6 +79,7 @@ public class PreferencesActivity extends Activity {
                             PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
                 }
             }
+
 //            if("hide_launcher".equals(key)){
 //                PackageManager pkg=getActivity().getPackageManager();
 //                if(sharedPreferences.getBoolean(key, false)){
@@ -174,6 +180,9 @@ public class PreferencesActivity extends Activity {
             Preference acesPref = (Preference) findPreference("aces_permit");
             acesPref.setSummary(getString(isAccessibilitySettingsOn(getActivity())? R.string.pref_enable_permit : R.string.pref_disable_permit));
 
+            Preference batPref = (Preference) findPreference("bet_permit");
+            batPref.setSummary(getString(IsignoreBatteryOptimization(getActivity())? R.string.pref_enable_permit : R.string.pref_disable_permit));
+
             //Preference savePref = (Preference) findPreference("save_permit");
             //savePref.setSummary(getString(isStorageEnable()? R.string.pref_enable_permit : R.string.pref_disable_permit));
 
@@ -272,6 +281,38 @@ public class PreferencesActivity extends Activity {
             editor.putString("ringtone", pickedUri == null ? "" : pickedUri.toString()).apply();
         }
     }
+
+    public static boolean IsignoreBatteryOptimization(Activity activity) {
+
+        PowerManager powerManager = (PowerManager)activity.getSystemService(POWER_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return powerManager.isIgnoringBatteryOptimizations(activity.getPackageName());
+        }
+        return true;
+    }
+
+    public static void ignoreBatteryOptimization(Activity activity) {
+
+        PowerManager powerManager = (PowerManager) activity.getSystemService(POWER_SERVICE);
+
+        boolean hasIgnored = false;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            hasIgnored = powerManager.isIgnoringBatteryOptimizations(activity.getPackageName());
+            Log.e("JHH",hasIgnored+"");
+            if(!hasIgnored) {
+                Intent intent = null;
+
+                intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,Uri.parse("package:"+activity.getPackageName()));
+
+                Log.e("JHH","startactivity");
+                activity.startActivity(intent);
+            }
+        }
+        //  判断当前APP是否有加入电池优化的白名单，如果没有，弹出加入电池优化的白名单的设置对话框。
+
+    }
+
 /*
     public String getRealPathFromURI(Context context, Uri contentUri) {
         Cursor cursor = null;

@@ -8,6 +8,9 @@
             <Preference
                 android:key="aces_permit"
                 android:title="@string/pref_aces_permit" />
+            <Preference
+                android:key="bet_permit"
+                android:title="取消电池优化" />
             <!--<Preference
                 android:key="save_permit"
                 android:title="@string/pref_save_permit" />-->
@@ -77,6 +80,10 @@
         <!--<SwitchPreference-->
             <!--android:key="hide_launcher"-->
             <!--android:title="@string/pref_hide_launcher" />-->
+        <!--<SwitchPreference-->
+            <!--android:key="hide_recent"-->
+            <!--android:title="@string/pref_hide_recent" />-->
+
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cate_about">
         <Preference
