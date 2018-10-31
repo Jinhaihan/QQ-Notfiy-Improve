@@ -45,6 +45,8 @@ public class NotificationMonitorService extends NotificationListenerService {
             notif(sbn, tag);
     }
 
+
+
     public int onStartCommand(Intent intent, int flags, int startId){
         if(intent != null){
             if(intent.hasExtra("tag")){
@@ -84,7 +86,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 }
             }
         }
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
     }
 
     private void notif(StatusBarNotification sbn, int tag){

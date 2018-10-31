@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:excludeFromRecents="true"
         android:autoRemoveFromRecents="true"
-        android:theme="@style/AppTheme.Transparent">
+        android:theme="@style/AppTheme.Transparent"
+        android:persistent="true">
         <activity
             android:name="com.tencent.tauth.AuthActivity"
             android:launchMode="singleTask"
@@ -35,8 +36,9 @@
             android:name="com.jinhaihan.qqnotfandshare.NotificationMonitorService"
             android:label="@string/service_notif"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
-            <intent-filter>
+            <intent-filter android:priority="1000">
                 <action android:name="android.service.notification.NotificationListenerService" />
+
             </intent-filter>
         </service>
         <service
