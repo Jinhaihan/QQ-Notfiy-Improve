@@ -74,16 +74,16 @@ public class PreferencesActivity extends Activity {
                             PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
                 }
             }
-            if("hide_launcher".equals(key)){
-                PackageManager pkg=getActivity().getPackageManager();
-                if(sharedPreferences.getBoolean(key, false)){
-                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
-                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-                }else{
-                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                }
-            }
+//            if("hide_launcher".equals(key)){
+//                PackageManager pkg=getActivity().getPackageManager();
+//                if(sharedPreferences.getBoolean(key, false)){
+//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+//                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+//                }else{
+//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+//                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+//                }
+//            }
             refreshSummary();
         }
 

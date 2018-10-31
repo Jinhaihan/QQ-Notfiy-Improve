@@ -74,9 +74,9 @@
         <SwitchPreference
             android:key="hide_share"
             android:title="@string/pref_hide_share" />
-        <SwitchPreference
-            android:key="hide_launcher"
-            android:title="@string/pref_hide_launcher" />
+        <!--<SwitchPreference-->
+            <!--android:key="hide_launcher"-->
+            <!--android:title="@string/pref_hide_launcher" />-->
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_cate_about">
         <Preference

@@ -1,5 +1,6 @@
 package com.jinhaihan.qqnotfandshare;
 
+import android.app.NotificationChannel;
 import android.support.v4.app.NotificationCompat;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -31,6 +32,10 @@ public class NotificationMonitorService extends NotificationListenerService {
     public static final int id_group0 = 5;
 
     private static final int maxCount = 20;
+
+    private static final int PUSH_NOTIFICATION_ID = (0x001);
+    private static final String PUSH_CHANNEL_ID = "QQ";
+    private static final String PUSH_CHANNEL_NAME = "QQ";
 
     // 在收到消息时触发
     @Override
@@ -269,7 +274,7 @@ public class NotificationMonitorService extends NotificationListenerService {
         priority = Math.min(notification.priority, priority);
 //        style = new NotificationCompat.BigTextStyle()
 //                .bigText("hahahah\nahah\nhasdhaskx\njchxkch\noseishfbxclehsdnxcsihdkncvusoidlvcnos;rihfxvcrhdfoibhdo;iflkhbsodifcn.xkhvosrjkfbxcvlo");
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,PUSH_CHANNEL_ID)
                 //.setSubText(getString(getStringId(tag)))
                 .setContentTitle(title)
                 .setContentText(text)
@@ -284,9 +289,10 @@ public class NotificationMonitorService extends NotificationListenerService {
                 //.setSound(notification.sound)
                 .setLights(notification.ledARGB, notification.ledOnMS, notification.ledOffMS)
                 //.setVibrate(notification.vibrate)
-                .setDefaults(Notification.DEFAULT_VIBRATE)
+                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.FLAG_AUTO_CANCEL)
                 .setShowWhen(true)
                 .setGroupSummary(setGroupSummary);
+
         setIcon(builder, tag, isQzone);
 
         Bitmap bmp = (Bitmap) notification.extras.get(Notification.EXTRA_LARGE_ICON);
@@ -311,7 +317,14 @@ public class NotificationMonitorService extends NotificationListenerService {
         boolean sound = !isGroupMsg || !sp.getBoolean("ignore_group_sound", false);
         if(!setGroupSummary && sound)
             builder.setSound(PreferencesUtils.getRingtone(this));
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).notify(id, builder.build());
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(PUSH_CHANNEL_ID, PUSH_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+        notificationManager.notify(id, builder.build());
     }
 
     final ArrayList<String> msgQQ = new  ArrayList<String>();
@@ -351,7 +364,7 @@ public class NotificationMonitorService extends NotificationListenerService {
         }
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         int mode = Integer.parseInt(sp.getString("icon_mode","0"));
-        if(mode == 2 && Build.VERSION.SDK_INT >= 23){
+        if(mode == 5 && Build.VERSION.SDK_INT >= 23){
             String s = sp.getString("icon_path","");
             if(icon == null || !s.equals(path)){
                 path = s;
@@ -365,14 +378,41 @@ public class NotificationMonitorService extends NotificationListenerService {
             }
         }
         int iconRes = R.drawable.ic_qq;
-        switch (tag){
-            case id_qq://R.string.qq:
-            case id_qqlite://R.string.qqlite:
-                iconRes =  mode == 1? R.drawable.ic_qq_full : R.drawable.ic_qq;
+//        switch (tag){
+//            case id_qq://R.string.qq:
+//            case id_qqlite://R.string.qqlite:
+//                iconRes =  mode == 1? R.drawable.ic_qq_full : R.drawable.ic_qq;
+//                break;
+//            case id_tim://R.string.tim:
+//                iconRes =  R.drawable.ic_tim;
+//                break;
+//        }
+        switch (mode) {
+            case 0:
+                switch (tag) {
+                    case id_qq://R.string.qq:
+                    case id_qqlite://R.string.qqlite:
+                        iconRes = R.drawable.ic_qq;
+                        break;
+                    case id_tim://R.string.tim:
+                        iconRes = R.drawable.ic_tim_g_1;
+                        break;
+                }
                 break;
-            case id_tim://R.string.tim:
-                iconRes =  R.drawable.ic_tim;
+            case 1:
+                iconRes = R.drawable.ic_tim;
                 break;
+            case 2:
+                iconRes = R.drawable.chat2;
+                break;
+            case 3:
+                iconRes = R.drawable.chat;
+                break;
+            case 4:
+                iconRes = R.drawable.ic_qq_full;
+                break;
+
+
         }
         builder.setSmallIcon(iconRes);
     }
