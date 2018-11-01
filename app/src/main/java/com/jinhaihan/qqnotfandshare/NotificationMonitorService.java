@@ -151,7 +151,7 @@ public class NotificationMonitorService extends NotificationListenerService {
             return notif_list(count, tag, title, notf_ticker, notf_text, mul, isQzone, notification, maxMsgLength);
         String name = null, text = null;
         boolean isGroupMsg = false;
-        Matcher matcher = Pattern.compile("(.*)\\((.+)\\):(.+)").matcher(notf_ticker);
+        Matcher matcher = Pattern.compile("(.*?)\\((.+?)\\):(.+)").matcher(notf_ticker);
         if(matcher.find()){
             name = matcher.group(2);
             text = matcher.group(1) + ":" + matcher.group(3);
