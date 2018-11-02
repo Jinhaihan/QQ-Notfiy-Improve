@@ -1,6 +1,7 @@
 package com.jinhaihan.qqnotfandshare;
 
 import android.app.NotificationChannel;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -15,6 +16,8 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.text.TextUtils;
+import android.util.Log;
 
 import com.jinhaihan.qqnotfandshare.utils.FileUtils;
 import com.jinhaihan.qqnotfandshare.utils.PreferencesUtils;
@@ -23,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.content.ContentValues.TAG;
 
 public class NotificationMonitorService extends NotificationListenerService {
     public static final int id_qq = 1;
@@ -34,8 +39,10 @@ public class NotificationMonitorService extends NotificationListenerService {
     private static final int maxCount = 20;
 
     private static final int PUSH_NOTIFICATION_ID = (0x001);
-    private static final String PUSH_CHANNEL_ID = "QQ";
+    private static final String PUSH_CHANNEL_ID = "QQ_";
     private static final String PUSH_CHANNEL_NAME = "QQ";
+    private static final String PUSH_CHANNEL_Group_ID = "QQ_Group_";
+    private static final String PUSH_CHANNEL_Group_NAME = "QQ Group";
 
     // 在收到消息时触发
     @Override
@@ -271,11 +278,15 @@ public class NotificationMonitorService extends NotificationListenerService {
         //noFloat |= isGroupMsg && sp.getBoolean("ignore_group_float", false);
 
         int priority = Integer.parseInt(sp.getString("priority", "0"));
-        if(isGroupMsg)
+        String channel = "";
+        if(isGroupMsg){
             priority = Math.min(priority,Integer.parseInt(sp.getString("group_priority", "0")));
+            channel = PUSH_CHANNEL_Group_ID;
+        }
+        else channel = PUSH_CHANNEL_ID;
         priority = Math.min(notification.priority, priority);
-//        style = new NotificationCompat.BigTextStyle()
-//                .bigText("hahahah\nahah\nhasdhaskx\njchxkch\noseishfbxclehsdnxcsihdkncvusoidlvcnos;rihfxvcrhdfoibhdo;iflkhbsodifcn.xkhvosrjkfbxcvlo");
+
+        Log.e("Channel",channel);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,PUSH_CHANNEL_ID)
                 //.setSubText(getString(getStringId(tag)))
                 .setContentTitle(title)
@@ -293,7 +304,8 @@ public class NotificationMonitorService extends NotificationListenerService {
                 //.setVibrate(notification.vibrate)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.FLAG_AUTO_CANCEL)
                 .setShowWhen(true)
-                .setGroupSummary(setGroupSummary);
+                .setGroupSummary(setGroupSummary)
+                .setChannelId(channel+PreferencesActivity.channelNum);
 
         setIcon(builder, tag, isQzone);
 
@@ -317,17 +329,16 @@ public class NotificationMonitorService extends NotificationListenerService {
         if(group)
             builder.setGroup("GROUP");
         boolean sound = !isGroupMsg || !sp.getBoolean("ignore_group_sound", false);
+
+        //SDK<26
         if(!setGroupSummary && sound)
             builder.setSound(PreferencesUtils.getRingtone(this));
+
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(PUSH_CHANNEL_ID, PUSH_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
-        }
+
         notificationManager.notify(id, builder.build());
     }
+
 
     final ArrayList<String> msgQQ = new  ArrayList<String>();
     final ArrayList<String> msgQQLite = new  ArrayList<String>();

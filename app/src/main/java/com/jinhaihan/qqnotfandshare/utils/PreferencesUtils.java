@@ -25,6 +25,12 @@ public class PreferencesUtils {
         return suri.isEmpty()? null : Uri.parse(suri);
     }
 
+    public static String getChannelNum(Context context){
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String num = sp.getString("channel_Num", "");
+        return num.isEmpty()? "1" : num;
+    }
+
     public static String getVersion(Context context){
         String versionName="";
         int versionCode=0;

@@ -34,6 +34,9 @@
             <Preference
                 android:key="ringtone"
                 android:title="@string/pref_ringtone" />
+            <SwitchPreference
+                android:key="vibrate"
+                android:title="@string/pref_vibrate" />
             <ListPreference
                 android:key="priority"
                 android:title="@string/pref_priority"

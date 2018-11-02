@@ -34,6 +34,7 @@
     <string name="pref_icon_path">图标路径</string>
     <string name="pref_use_default_sound">系统提示音</string>
     <string name="pref_ringtone">提示音</string>
+    <string name="pref_vibrate">忽略震动</string>
     <string name="pref_priority">通知优先级</string>
     <string-array name="pref_priority">
         <item>最高</item>
@@ -53,7 +54,7 @@
     <string name="pref_cate_group">群组消息</string>
     <string name="pref_ignore_group_msg">忽略群消息</string>
     <string name="pref_group_priority">群组优先级</string>
-    <string name="pref_ignore_group_sound">忽略群组提示音</string>
+    <string name="pref_ignore_group_sound">忽略群组提示音与振动</string>
     <string name="pref_ignore_group_float">忽略群组浮动通知</string>
     <string name="pref_use_multi_line">多行显示单条消息</string>
     <string name="pref_max_single_msg">单条消息最大字数</string>

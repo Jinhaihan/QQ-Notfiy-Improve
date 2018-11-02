@@ -3,13 +3,15 @@ package com.jinhaihan.qqnotfandshare;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -24,6 +26,7 @@ import android.preference.PreferenceScreen;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.jinhaihan.qqnotfandshare.utils.FileUtils;
 import com.jinhaihan.qqnotfandshare.utils.PreferencesUtils;
@@ -34,9 +37,15 @@ import java.net.URISyntaxException;
 
 public class PreferencesActivity extends Activity {
     private static final int REQUEST_STORAGE_CODE = 1;
+    private static final String PUSH_CHANNEL_ID = "QQ_";
+    private static final String PUSH_CHANNEL_NAME = "QQ_";
+    private static final String PUSH_CHANNEL_Group_ID = "QQ_Group_";
+    private static final String PUSH_CHANNEL_Group_NAME = "QQ Group_";
+    public static int channelNum;
 
     public static class PreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
         public SharedPreferences sp;
+
 
         @Override
         public void onCreate(Bundle saveInstanceState) {
@@ -44,6 +53,36 @@ public class PreferencesActivity extends Activity {
             // 加载xml资源文件
             addPreferencesFromResource(R.xml.preferences);
             sp = getPreferenceManager().getSharedPreferences();
+
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if(PreferencesUtils.getChannelNum(getActivity()).isEmpty()){
+                    channelNum = 1;
+                }
+                else channelNum = Integer.parseInt(PreferencesUtils.getChannelNum(getActivity()));
+
+                Log.e("JHH",PUSH_CHANNEL_ID+channelNum);
+                AudioAttributes att = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .build();
+                NotificationChannel channel_List = new NotificationChannel(PUSH_CHANNEL_ID+channelNum,
+                        PUSH_CHANNEL_NAME+channelNum,
+                        NotificationManager.IMPORTANCE_HIGH);
+                NotificationChannel channel_Group = new NotificationChannel(PUSH_CHANNEL_Group_ID+channelNum,
+                        PUSH_CHANNEL_Group_NAME+channelNum,
+                        NotificationManager.IMPORTANCE_HIGH);
+                channel_List.setSound(PreferencesUtils.getRingtone(getActivity()),att);
+                channel_List.enableVibration(true);
+                channel_Group.setSound(PreferencesUtils.getRingtone(getActivity()),att);
+                channel_Group.enableVibration(true);
+
+                if (notificationManager != null) {
+                    notificationManager.createNotificationChannel(channel_List);
+                    notificationManager.createNotificationChannel(channel_Group);
+                }
+            }
+
             refreshSummary();
         }
 
@@ -64,7 +103,34 @@ public class PreferencesActivity extends Activity {
                 ((PreferencesActivity)getActivity()).getIcon();
             if("ringtone".equals(preference.getKey()))
                 ((PreferencesActivity)getActivity()).getRingtone();
+            if("ignore_group_sound".equals(preference.getKey()))
+                ChangeSound_Oreo(getActivity());
+            if("vibrate".equals(preference.getKey())){
+                ChangeSound_Oreo(getActivity());
+                ShowVibrateWarn();
+            }
+
             return false;
+        }
+
+        public void ShowVibrateWarn(){
+            //    通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            //    设置Title的内容
+            builder.setTitle("修改震动");
+            //    设置Content来显示一个信息
+            builder.setMessage("修改震动选项会影响Wear os手表或手环的震动，如果您有手表或手环，建议关闭QQ震动而使用本应用的震动，会在穿戴设备上获得更好体验。如果您没有，那就当我没说。");
+            //    设置一个PositiveButton
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                }
+            });
+
+            //    显示出该对话框
+            builder.show();
         }
 
         @Override
@@ -99,12 +165,15 @@ public class PreferencesActivity extends Activity {
 
             refreshSummary();
             getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+
         }
 
         @Override
         public void onPause() {
             getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+
             super.onPause();
+
         }
 /*
         public boolean isNotificationListenerEnabled(Context context) {
@@ -279,6 +348,61 @@ public class PreferencesActivity extends Activity {
             Uri pickedUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString("ringtone", pickedUri == null ? "" : pickedUri.toString()).apply();
+            ChangeSound_Oreo(this);
+        }
+    }
+
+    public static void ChangeSound_Oreo(Context context){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.e("JHH","notificationManager D");
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.deleteNotificationChannel(PUSH_CHANNEL_ID+channelNum);
+            notificationManager.deleteNotificationChannel(PUSH_CHANNEL_Group_ID+channelNum);
+            channelNum ++;
+            editor.putString("channel_Num", channelNum+"").apply();
+            AudioAttributes att = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            NotificationChannel channel_List = new NotificationChannel(PUSH_CHANNEL_ID+channelNum, PUSH_CHANNEL_ID+channelNum, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel_Group = new NotificationChannel(PUSH_CHANNEL_Group_ID+channelNum, PUSH_CHANNEL_Group_ID+channelNum, NotificationManager.IMPORTANCE_HIGH);
+            channel_List.setSound(PreferencesUtils.getRingtone(context),att);
+            channel_List.enableVibration(true);
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+            if(!sp.getBoolean("vibrate", false)){
+                channel_List.enableVibration(true);
+                if(!sp.getBoolean("ignore_group_sound", false)){
+                    channel_Group.setSound(PreferencesUtils.getRingtone(context),att);
+                    channel_Group.enableVibration(true);
+                }
+                else {
+                    channel_Group.setSound(null,att);
+                    channel_Group.enableVibration(false);
+
+                }
+
+            }
+            else {
+                channel_List.enableVibration(false);
+                if(!sp.getBoolean("ignore_group_sound", false)){
+                    channel_Group.setSound(PreferencesUtils.getRingtone(context),att);
+                }
+                else {
+                    channel_Group.setSound(null,att);
+                }
+                channel_Group.enableVibration(false);
+            }
+
+
+
+            Log.e("JHH",PreferencesUtils.getRingtone(context)+"");
+
+            notificationManager.createNotificationChannel(channel_List);
+            notificationManager.createNotificationChannel(channel_Group);
+            Log.e("JHH",PUSH_CHANNEL_ID+channelNum);
+
         }
     }
 
@@ -329,4 +453,5 @@ public class PreferencesActivity extends Activity {
         }
     }
     */
+
 }
