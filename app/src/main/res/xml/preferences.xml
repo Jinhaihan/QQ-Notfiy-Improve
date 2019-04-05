@@ -37,12 +37,12 @@
             <SwitchPreference
                 android:key="vibrate"
                 android:title="@string/pref_vibrate" />
-            <ListPreference
-                android:key="priority"
-                android:title="@string/pref_priority"
-                android:defaultValue="0"
-                android:entries="@array/pref_priority"
-                android:entryValues="@array/pref_priority_value"/>
+            <!--<ListPreference-->
+                <!--android:key="priority"-->
+                <!--android:title="@string/pref_priority"-->
+                <!--android:defaultValue="0"-->
+                <!--android:entries="@array/pref_priority"-->
+                <!--android:entryValues="@array/pref_priority_value"/>-->
             <SwitchPreference
                 android:key="use_multi_line"
                 android:title="@string/pref_use_multi_line" />
@@ -66,12 +66,12 @@
                 <SwitchPreference
                     android:key="ignore_group_msg"
                     android:title="@string/pref_ignore_group_msg" />
-                <ListPreference
-                    android:key="group_priority"
-                    android:title="@string/pref_group_priority"
-                    android:defaultValue="0"
-                    android:entries="@array/pref_priority"
-                    android:entryValues="@array/pref_priority_value"/>
+                <!--<ListPreference-->
+                    <!--android:key="group_priority"-->
+                    <!--android:title="@string/pref_group_priority"-->
+                    <!--android:defaultValue="0"-->
+                    <!--android:entries="@array/pref_priority"-->
+                    <!--android:entryValues="@array/pref_priority_value"/>-->
                 <SwitchPreference
                     android:key="ignore_group_sound"
                     android:title="@string/pref_ignore_group_sound" />
@@ -92,5 +92,8 @@
         <Preference
             android:key="version_code"
             android:title="@string/pref_version_code" />
+        <Preference
+            android:key="QA"
+            android:title="@string/QA" />
     </PreferenceCategory>
 </PreferenceScreen>

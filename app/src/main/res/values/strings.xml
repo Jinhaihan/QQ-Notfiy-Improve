@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">QQ通知增强</string>
+    <string name="app_name">QQ通知</string>
     <string name="service_notif">QQ通知扩展服务</string>
     <string name="service_access">QQ通知隐藏服务</string>
     <string name="activity_share">分享给QQ好友</string>
@@ -89,7 +89,27 @@
         隐藏图标后可在无障碍设置或应用信息页找到设置入口\n
         3.基于开源项目QQNotfAndShare二次开发，感谢原作者
     </string>
+
+    <!--QA-->
+    <string name="about_qa_title">Q&amp;A</string>
+    <string name="about_qa_message">
+        1、关于Root功能：\n
+            目前没有集成root的打算，如果需要请使用评论区的原作者开发的root版本\n
+        2、关于一些机型无效、权限给了不能用：\n
+            打开所有权限之后重启（开机自启，无需再点击开启，仅重启即可），然后收一个消息试试\n
+        3、MIUI问题：\n
+            我在小米5C和一加3的MIUI10测试没问题，测试机型不多，抱歉，我尽可能兼容\n
+        4、Xposed、Nevo、Magisk：\n
+            这个可以有，但是我这边大四毕业了时间不多，暂且拖拖\n
+        5、后台隐藏：\n
+            我在寻找方案，一个比较完美的方案\n
+        6、自定义图标：\n
+            如果你有好的图标我可以集成进来，发给我~\n
+        7、其他问题：\n
+            评论区或者Github提一下Issue吧
+    </string>
     <string name="about_dialog_support">打赏</string>
     <string name="about_dialog_github">GitHub</string>
     <string name="about_dialog_button">确定</string>
+    <string name="QA"><![CDATA[Q&A]]></string>
 </resources>

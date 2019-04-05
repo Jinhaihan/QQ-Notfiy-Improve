@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.provider.CalendarContract;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -99,6 +101,8 @@ public class PreferencesActivity extends Activity {
                 requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_CODE);
             if("version_code".equals(preference.getKey()))
                 ((PreferencesActivity)getActivity()).showInfo();
+            if("QA".equals(preference.getKey()))
+                ((PreferencesActivity)getActivity()).showQA();
             if("icon_path".equals(preference.getKey()))
                 ((PreferencesActivity)getActivity()).getIcon();
             if("ringtone".equals(preference.getKey()))
@@ -228,11 +232,11 @@ public class PreferencesActivity extends Activity {
             ListPreference listPref = (ListPreference) findPreference("icon_mode");
             listPref.setSummary(listPref.getEntry());
 
-            listPref = (ListPreference) findPreference("priority");
-            listPref.setSummary(listPref.getEntry());
+//            listPref = (ListPreference) findPreference("priority");
+//            listPref.setSummary(listPref.getEntry());
 
-            listPref = (ListPreference) findPreference("group_priority");
-            listPref.setSummary(listPref.getEntry());
+//            listPref = (ListPreference) findPreference("group_priority");
+//            listPref.setSummary(listPref.getEntry());
 
             Preference dirPref = (Preference) findPreference("icon_path");
             dirPref.setEnabled(Integer.parseInt(listPref.getValue())==2);
@@ -325,6 +329,25 @@ public class PreferencesActivity extends Activity {
         builder.show();
     }
 
+    public void showQA(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.about_qa_title));
+        builder.setMessage(getString(R.string.about_qa_message));
+        builder.setNeutralButton(R.string.about_dialog_github, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                Uri content_url = Uri.parse("https://github.com/Jinhaihan/QQNotfAndShare");
+                intent.setData(content_url);
+                startActivity(Intent.createChooser(intent, null));
+            }
+        });
+
+        builder.setPositiveButton(R.string.about_dialog_button, null);
+        builder.show();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -349,6 +372,7 @@ public class PreferencesActivity extends Activity {
             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
             editor.putString("ringtone", pickedUri == null ? "" : pickedUri.toString()).apply();
             ChangeSound_Oreo(this);
+            Log.e("requestCode", "create Channael");
         }
     }
 
@@ -368,6 +392,8 @@ public class PreferencesActivity extends Activity {
             NotificationChannel channel_List = new NotificationChannel(PUSH_CHANNEL_ID+channelNum, PUSH_CHANNEL_ID+channelNum, NotificationManager.IMPORTANCE_HIGH);
             NotificationChannel channel_Group = new NotificationChannel(PUSH_CHANNEL_Group_ID+channelNum, PUSH_CHANNEL_Group_ID+channelNum, NotificationManager.IMPORTANCE_HIGH);
             channel_List.setSound(PreferencesUtils.getRingtone(context),att);
+            channel_List.enableLights(true);
+            channel_List.setLightColor(Color.BLUE);
             channel_List.enableVibration(true);
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 
