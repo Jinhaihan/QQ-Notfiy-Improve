@@ -77,12 +77,12 @@
                     android:title="@string/pref_ignore_group_sound" />
             </PreferenceScreen>
         </PreferenceScreen>
-        <SwitchPreference
-            android:key="hide_share"
-            android:title="@string/pref_hide_share" />
-        <!--<SwitchPreference-->
-            <!--android:key="hide_launcher"-->
-            <!--android:title="@string/pref_hide_launcher" />-->
+<!--        <SwitchPreference-->
+<!--            android:key="hide_share"-->
+<!--            android:title="@string/pref_hide_share" />-->
+<!--        <SwitchPreference-->
+<!--            android:key="hide_launcher"-->
+<!--            android:title="@string/pref_hide_launcher" />-->
         <!--<SwitchPreference-->
             <!--android:key="hide_recent"-->
             <!--android:title="@string/pref_hide_recent" />-->

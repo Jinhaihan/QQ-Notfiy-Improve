@@ -61,7 +61,8 @@
     <string name="pref_use_group">消息分组</string>
     <string name="pref_use_notif_group">合并消息分组(N+)</string>
     <string name="pref_hide_share">隐藏“分享到QQ”</string>
-    <!--<string name="pref_hide_launcher">隐藏启动器图标</string>-->
+    <string name="pref_hide_launcher">隐藏启动器图标</string>
+    <string name="pref_hide_launcher_text">隐藏后可于手机应用管理-高级-应用中的其他设置中重新找到此页面，不同机型可能有所不同</string>
     <string name="pref_hide_recent">在最近任务中隐藏</string>
     <string name="pref_cate_about">关于</string>
     <string name="pref_version_code">版本号</string>

@@ -1,8 +1,7 @@
 package com.jinhaihan.qqnotfandshare;
 
-import android.app.NotificationChannel;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.NotificationCompat;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -16,7 +15,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.jinhaihan.qqnotfandshare.utils.FileUtils;
@@ -24,12 +22,12 @@ import com.jinhaihan.qqnotfandshare.utils.PreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static android.content.ContentValues.TAG;
-
 public class NotificationMonitorService extends NotificationListenerService {
+    String ClassTag = "NotificationListenerService";
     public static final int id_qq = 1;
     public static final int id_qqlite = 2;
     public static final int id_tim = 3;
@@ -47,6 +45,7 @@ public class NotificationMonitorService extends NotificationListenerService {
     // 在收到消息时触发
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
+        Log.d("ClassTag","有通知弹出消息");
         int tag = getTagfromPackageName(sbn.getPackageName());
         if (tag != 0)
             notif(sbn, tag);
@@ -60,6 +59,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                 int tag = intent.getIntExtra("tag", 0);
                 if (tag > 0) {
                     NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    assert nm != null;
                     nm.cancel(tag);
                     if (tag != id_qzone) {
                         StatusBarNotification[] sbns = getActiveNotifications();
@@ -82,6 +82,7 @@ public class NotificationMonitorService extends NotificationListenerService {
                         for (StatusBarNotification sbn : sbns) {
                             if (!getPackageName().equals(sbn.getPackageName()) || sbn.getId() < id_group0)
                                 continue;
+                            assert nm != null;
                             nm.cancel(sbn.getId());
                         }
                     }
@@ -126,7 +127,7 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (notf_ticker.equals(notf_text)) {
             if (matcher.find()) {
                 isQzone = true;
-                count = Integer.parseInt(matcher.group(1));
+                count = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
             } else if ("QQ空间动态".equals(title)) {
                 isQzone = true;
                 count = maxCount;
@@ -136,7 +137,7 @@ public class NotificationMonitorService extends NotificationListenerService {
         if (!isQzone) {
             matcher = Pattern.compile("(\\d+)\\S{1,3}新消息\\)?$").matcher(title);
             if (matcher.find())
-                count = Integer.parseInt(matcher.group(1));
+                count = Integer.parseInt(Objects.requireNonNull(matcher.group(1)));
         }
         int maxMsgLength = getMaxMsgLength();
         if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("use_group", false) ?
@@ -317,7 +318,14 @@ public class NotificationMonitorService extends NotificationListenerService {
 
         setIcon(builder, tag, isQzone);
 
-        Bitmap bmp = (Bitmap) notification.extras.get(Notification.EXTRA_LARGE_ICON);
+        Bitmap bmp = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            bmp = FileUtils.drawableToBitmap(notification.getLargeIcon().loadDrawable(this));
+        }
+        else {
+            bmp = (Bitmap) Objects.requireNonNull(notification.extras.get(Notification.EXTRA_LARGE_ICON));
+        }
+
         if (!isQzone && group) {
             lastIntent = notification.contentIntent;
             Intent notificationIntent = new Intent(this, NotificationMonitorService.class);

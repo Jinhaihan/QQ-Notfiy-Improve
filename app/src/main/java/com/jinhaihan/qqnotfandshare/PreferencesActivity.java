@@ -139,27 +139,27 @@ public class PreferencesActivity extends Activity {
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if("hide_share".equals(key)){
-                PackageManager pkg=getActivity().getPackageManager();
-                if(sharedPreferences.getBoolean(key, false)){
-                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), ShareActivity.class),
-                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-                }else{
-                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), ShareActivity.class),
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-                }
-            }
-
-//            if("hide_launcher".equals(key)){
+//            if("hide_share".equals(key)){
 //                PackageManager pkg=getActivity().getPackageManager();
 //                if(sharedPreferences.getBoolean(key, false)){
-//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), ShareActivity.class),
 //                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
 //                }else{
-//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+//                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), ShareActivity.class),
 //                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 //                }
 //            }
+
+            if("hide_launcher".equals(key)){
+                PackageManager pkg=getActivity().getPackageManager();
+                if(sharedPreferences.getBoolean(key, false)){
+                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+                            PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+                }else{
+                    pkg.setComponentEnabledSetting(new ComponentName(getActivity(), SplashActivity.class),
+                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+                }
+            }
             refreshSummary();
         }
 
@@ -264,6 +264,9 @@ public class PreferencesActivity extends Activity {
 
             Preference aboutPref = (Preference) findPreference("version_code");
             aboutPref.setSummary(PreferencesUtils.getVersion(getActivity()));
+
+//            Preference hideLauncher = (Preference) findPreference("hide_launcher");
+//            hideLauncher.setSummary(getResources().getString(R.string.pref_hide_launcher_text));
         }
 
         public void openNotificationListenSettings() {
